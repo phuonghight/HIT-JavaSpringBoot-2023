@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Java Web</title>
+</head>
+<body style="display: flex; justify-content: center; flex-direction: column; align-items: center">
+    <h1 style="text-align: center">Hello World</h1>
+    <h2 th:text="${name}" ></h2>
+    <ul>
+        <li th:each="student : ${listStudent}" th:object="${student}">
+            <h2 th:text="*{id}"></h2>
+            <h2 th:text="*{name}"></h2>
+        </li>
+    </ul>
+
+<!--    <form th:action="@{/about}">-->
+<!--        <label>Enter name: </label>-->
+<!--        <input type="text" required name="name" />-->
+<!--        <label>Enter password: </label>-->
+<!--        <input type="password" required name="pass"/>-->
+<!--        <button type="submit">Send infomation</button>-->
+<!--    </form>-->
+
+    <form th:action="@{/about}" method="post">
+        <label>Enter name: </label>
+        <input type="text" required name="name" />
+        <label>Enter password: </label>
+        <input type="number" required name="pass"/>
+        <button type="submit">Send infomation</button>
+    </form>
+
+    <script>
+    </script>
+</body>
+</html>
