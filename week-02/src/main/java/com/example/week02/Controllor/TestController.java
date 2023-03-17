@@ -53,12 +53,13 @@ public class TestController {
         users.add(new Users("phuong", "123"));
         users.add(new Users("tienanh", "456"));
 
-        if(users.contains(u)) {
-            model.addAttribute("user", u);
-            return "about";
+        for (int i = 0; i < users.size(); i++) {
+            if (u.getName().equals(users.get(i).getName()) && u.getPass().equals(users.get(i).getPass())) {
+                model.addAttribute("user", u);
+                return "about";
+            }
         }
-        else return "ErrorPage";
-
+        return "ErrorPage";
     }
 
 }
