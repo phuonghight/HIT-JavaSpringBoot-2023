@@ -1,13 +1,11 @@
 package com.example.week02.Controllor;
 
 import com.example.week02.Student;
-import com.example.week02.Users;
-import org.apache.catalina.User;
+import com.example.week02.Account;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
@@ -18,16 +16,14 @@ public class TestController {
 
     @RequestMapping
     public ModelAndView index(Model model) {
-        model.addAttribute("name", "Hoang Phuong");
-        Student s = new Student(1, "Phuong");
-        List<Student> ds = new ArrayList<>();
-        ds.add(s);
-        ds.add(new Student(2, "Tien Anh"));
-        ds.add(new Student(3, "Kien"));
-        model.addAttribute("listStudent", ds);
-
         ModelAndView view = new ModelAndView("index");
-        view.addObject("listStudent", ds);
+
+//        Student s = new Student("001", "Phuong", 19, "khmt");
+//        List<Student> ds = new ArrayList<>();
+//        ds.add(s);
+//        model.addAttribute("listStudent", ds);
+//        view.addObject("listStudent", ds);
+
         return view;
     }
 
@@ -46,20 +42,26 @@ public class TestController {
 //
 //        return "about";
 //    }
-    @RequestMapping("/about")
-    public String about(@ModelAttribute Users u, Model model) {
 
-        List<Users> users = new ArrayList<>();
-        users.add(new Users("phuong", "123"));
-        users.add(new Users("tienanh", "456"));
 
-        for (int i = 0; i < users.size(); i++) {
-            if (u.getName().equals(users.get(i).getName()) && u.getPass().equals(users.get(i).getPass())) {
-                model.addAttribute("user", u);
-                return "about";
+    @RequestMapping("/About")
+    public String about(@ModelAttribute Account a, Model model) {
+        System.out.println(a.toString());
+        List<Account> accountsList = new ArrayList<>();
+        accountsList.add(new Account("phuong", "123"));
+        accountsList.add(new Account("tienanh", "456"));
+        accountsList.add(new Account("kien", "789"));
+
+        List<Student> studentsList = new ArrayList<>();
+        studentsList.add(new Student("msv01", "nguyen van a", 20, "cntt"));
+        studentsList.add(new Student("msv02", "nguyen van b", 20, "cntt"));
+        studentsList.add(new Student("msv03", "nguyen van c", 20, "cntt"));
+        for (Account account : accountsList) {
+            if (a.getName().equals(account.getName()) && a.getPass().equals(account.getPass())) {
+                model.addAttribute("students", studentsList);
+                return "About";
             }
         }
         return "ErrorPage";
     }
-
 }

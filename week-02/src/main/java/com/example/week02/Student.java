@@ -1,36 +1,15 @@
 package com.example.week02;
 
 public class Student {
-    private int id;
-
-    @Override
-    public String toString() {
-        return "Student{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
-    }
-
-    public Student(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
+    private String id;
     private String name;
+    private int age;
+    private String major;
+
+    public Student(String id, String name, int age, String major) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+        this.major = major;
+    }
 }
