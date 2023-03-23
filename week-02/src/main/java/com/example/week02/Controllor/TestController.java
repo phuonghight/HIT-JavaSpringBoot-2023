@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.List;
 @Controller
 public class TestController {
 
-    @RequestMapping
+    @RequestMapping(value = "/index")
     public ModelAndView index(Model model) {
         ModelAndView view = new ModelAndView("index");
 
@@ -43,25 +44,42 @@ public class TestController {
 //        return "about";
 //    }
 
-
-    @RequestMapping("/About")
-    public String about(@ModelAttribute Account a, Model model) {
-        System.out.println(a.toString());
+    public boolean checkAcc(Account a) {
         List<Account> accountsList = new ArrayList<>();
         accountsList.add(new Account("phuong", "123"));
         accountsList.add(new Account("tienanh", "456"));
         accountsList.add(new Account("kien", "789"));
+        for (Account account : accountsList) {
+            if (a.getName().equals(account.getName()) && a.getPass().equals(account.getPass())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
+
+    @RequestMapping(value = "/About", method = RequestMethod.POST)
+    public String about(@ModelAttribute Account a, Model model) {
         List<Student> studentsList = new ArrayList<>();
         studentsList.add(new Student("msv01", "nguyen van a", 20, "cntt"));
         studentsList.add(new Student("msv02", "nguyen van b", 20, "cntt"));
         studentsList.add(new Student("msv03", "nguyen van c", 20, "cntt"));
-        for (Account account : accountsList) {
-            if (a.getName().equals(account.getName()) && a.getPass().equals(account.getPass())) {
-                model.addAttribute("students", studentsList);
-                return "About";
-            }
+
+//        List<Account> accountsList = new ArrayList<>();
+//        accountsList.add(new Account("phuong", "123"));
+//        accountsList.add(new Account("tienanh", "456"));
+//        accountsList.add(new Account("kien", "789"));
+//        for (Account account : accountsList) {
+//            if (a.getName().equals(account.getName()) && a.getPass().equals(account.getPass())) {
+//                model.addAttribute("students", studentsList);
+//                return "About";
+//            }
+//        }
+        if(checkAcc(a)) {
+            model.addAttribute("students", studentsList);
+            return "About";
         }
+        model.addAttribute("errMess", "Invalid username or password:( Please try again!");
         return "ErrorPage";
     }
 }

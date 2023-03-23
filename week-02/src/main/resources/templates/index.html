@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Java Web</title>
+    <title>Java Web - Login</title>
     <style>
         *{
             margin: 0;
@@ -29,36 +29,62 @@
         }
         .loginForm {
             text-align: center;
+            background: white;
+            padding: 50px 100px;
+            border-radius: 10px;
         }
         .loginForm .input-group {
-            margin: 20px 0;
+            margin: 40px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
         }
         .loginForm .input-group input {
-            font-size: 16px;
-            margin-left: 20px;
+            font-size: 18px;
             padding: 10px 0 10px 10px;
-            width: 300px;
+            width: 400px;
             outline: none;
-            border: none;
+            border: 1px solid black;
+            border-radius: 5px;
+            transition: all 0.3s ease-in-out;
         }
         .loginForm .input-group label {
-            font-size: 20px;
+            color: darkgrey;
+            font-size: 18px;
+            /*background: white;*/
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            transition: all 0.3s ease-in-out;
+        }
+        input:focus {
+            border: 1px solid rgb(175, 253, 167);
+            box-shadow: 0 0 0 5px rgba(175, 253, 167, 0.25);
+        }
+        input::placeholder {
+            transform: translate(-1000px,0);
+        }
+        input:focus ~ label {
+            transform: translate(0, -150%);
+        }
+        input:not(:placeholder-shown) ~ label {
+            transform: translate(0, -150%);
         }
         .loginForm button {
-            padding: 10px 20px;
+            font-size: 18px;
+            padding: 15px 40px;
             border: none;
             cursor: pointer;
             font-weight: bold;
             background-color: #FFDEE9;
-            background-image: linear-gradient(45deg, #FFDEE9 0%, #B5FFFC 100%);
+            background-image: linear-gradient(60deg, #FFDEE9 0%, #B5FFFC 100%);
+            color: white;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <h1 style="text-align: center">Login</h1>
 
 <!--    <ul>-->
 <!--        <li th:each="student : ${listStudent}" th:object="${student}">-->
@@ -78,14 +104,16 @@
 <!--    </form>-->
 
     <form class="loginForm" th:action="@{/About}" method="post">
+        <h1 style="text-align: center">Login</h1>
         <div class="input-group">
-            <label>Enter name: </label>
-            <input type="text" required name="name" />
+            <input id="name" type="text" required name="name" placeholder="Username"/>
+            <label for="name">Username</label>
         </div>
         <div class="input-group">
-            <label>Enter password: </label>
-            <input type="text" required name="pass" />
+            <input id="pass" type="password" required name="pass" placeholder="Password"/>
+            <label for="pass">Password</label>
         </div>
+        <p th:text="${errMess}"></p>
         <button type="submit">Login</button>
     </form>
 </body>
