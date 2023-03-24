@@ -12,9 +12,9 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.ArrayList;
 import java.util.List;
 
+@Conf
 @Controller
 public class TestController {
-
     @RequestMapping(value = "/index")
     public ModelAndView index(Model model) {
         ModelAndView view = new ModelAndView("index");
@@ -59,7 +59,7 @@ public class TestController {
 
 
     @RequestMapping(value = "/About", method = RequestMethod.POST)
-    public String about(@ModelAttribute Account a, Model model) {
+    public String loginHandler(@ModelAttribute Account a, Model model) {
         List<Student> studentsList = new ArrayList<>();
         studentsList.add(new Student("msv01", "nguyen van a", 20, "cntt"));
         studentsList.add(new Student("msv02", "nguyen van b", 20, "cntt"));
@@ -79,7 +79,10 @@ public class TestController {
             model.addAttribute("students", studentsList);
             return "About";
         }
-        model.addAttribute("errMess", "Invalid username or password:( Please try again!");
-        return "ErrorPage";
+        else {
+            model.addAttribute("errMess", "Invalid username or password:( Please try again!");
+            return "index";
+        }
+///        return "ErrorPage";
     }
 }

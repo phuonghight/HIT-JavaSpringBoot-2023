@@ -1,5 +1,7 @@
 package com.example.week02;
 
+import org.springframework.context.annotation.Configuration;
+
 public class Student {
     private String id;
     private String name;
