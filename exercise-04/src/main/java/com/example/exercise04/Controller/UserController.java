@@ -9,8 +9,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 @RestController
 public class UserController {
-    private UsersStore list = new UsersStore();
-
     @RequestMapping(value = "/login")
     public ModelAndView loginView() {
         ModelAndView view = new ModelAndView("login");
@@ -33,10 +31,9 @@ public class UserController {
     public ModelAndView signinHandler(Model model, @RequestParam("username") String username,
                                       @RequestParam("password") String password) {
         ModelAndView view;
-
-        for(User user : list.getUsers()) {
+        for(User user : UsersStore.users) {
             if(username.equals(user.getUsername()) && password.equals(user.getPassword())) {
-                model.addAttribute("users", list.getUsers());
+                model.addAttribute("users", UsersStore.users);
                 view = storeView();
                 return view;
             }
@@ -47,19 +44,21 @@ public class UserController {
 
     @GetMapping(value = "/api/users")
     public ResponseEntity<?> storeAPI() {
-        return ResponseEntity.ok().body(list.getUsers());
+        return ResponseEntity.ok().body(UsersStore.users);
     }
 
-    @PostMapping(value = "/api/users")
-    public ResponseEntity<?> createAccount(User user) {
-        list.getUsers().add(user);
-        return ResponseEntity.ok().body(list.getUsers());
-    }
+//    @PostMapping(value = "/api/users")
+//    public ResponseEntity<?> createAccount(User user) {
+//        UsersStore.users.add(user);
+//        return ResponseEntity.ok().body(UsersStore.users);
+//    }
 
     @PostMapping(value = "/register")
     public ModelAndView signupHandler(@ModelAttribute User user) {
         // thêm user mới đăng ký vào store
-        createAccount(user);
+        // createAccount(user);
+        UsersStore.users.add(user);
+
         // đăng ký xong chuyển hướng về login
         ModelAndView view = loginView();
         return view;

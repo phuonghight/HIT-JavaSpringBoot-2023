@@ -8,7 +8,7 @@ import java.util.List;
 
 
 public class UsersStore {
-    private static List<User> users = new ArrayList<>();
+    public static List<User> users = new ArrayList<>();
     static {
         users.add(new User("Dang Hoang Phuong" ,"phuong", "123"));
         users.add(new User("Do Tien Anh" ,"tienanh", "123"));
