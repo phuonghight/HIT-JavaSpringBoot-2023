@@ -46,13 +46,22 @@ public class UserController {
     }
 
     @GetMapping(value = "/api/users")
-    public ResponseEntity<?> createAccount(@RequestBody User user) {
+    public ResponseEntity<?> storeAPI() {
         return ResponseEntity.ok().body(list.getUsers());
     }
 
-//    @GetMapping(value = "/register")
-//    public ModelAndView signupHandler(@ModelAttribute User user) {
-//        ModelAndView view = loginView();
-//        return view;
-//    }
+    @PostMapping(value = "/api/users")
+    public ResponseEntity<?> createAccount(User user) {
+        list.getUsers().add(user);
+        return ResponseEntity.ok().body(list.getUsers());
+    }
+
+    @PostMapping(value = "/register")
+    public ModelAndView signupHandler(@ModelAttribute User user) {
+        // thêm user mới đăng ký vào store
+        createAccount(user);
+        // đăng ký xong chuyển hướng về login
+        ModelAndView view = loginView();
+        return view;
+    }
 }
