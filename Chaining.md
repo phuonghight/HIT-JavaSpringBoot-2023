@@ -77,3 +77,53 @@ public class UserController {
 ```
 
 **Tóm lại, Spring Data JPA giúp tương tác với CSDL một cách đơn giản và hiệu quả, giảm thiểu lượng code tiêu chuẩn và tăng hiệu suất phát triển ứng dụng.**
+
+## Query Creation trong Spring Data JPA
+
+**Query Creation** là một cách để **Spring Data JPA** tạo câu truy vấn SQL dựa trên tên phương thức và các thông số đầu vào của phương thức. Với **Query Creation**, chúng ta có thể viết nhanh các truy vấn cơ bản mà không cần phải viết lại câu truy vấn SQL.
+
+Các quy tăc đặt tên phương thức để sử dụng Query Creation trong Spring Data JPA như sau:
+
+1. Tìm theo thuộc tính: **`findBy{PropertyName}`**, ví dụ: **`findByLastName(String lastName)`**. Đây là quy tắc đó đơn giản nhất. Chỉ cần chỉ định tên thuộc tính và kiểu dữ liệu của thuộc tính, **Spring Data** sẽ tạo ra truy vấn theo tên phương thức này.
+
+2. Tìm theo nhiều thuộc tính: **`findBy{PropertyName1}And{PropertyName2}`**, ví dụ: **`findByFirstNameAndLastName(String firstName, String lastName)`**. Quy tắc này được sử dụng khi muốn tìm kiếm dữ liệu dựa trên nhiều thuộc tính của đối tượng.
+
+3. Tìm kiếm theo một thuộc tính, với giá trị được so sánh lớn hơn hoặc bằng: **`findBy{PropertyName}GreaterThanEqual`**, ví dụ: **`findByAgeGreaterThanEqual(int age)`**. Có nghĩa là **Spring Data JPA** sẽ tạo ra truy vấn để tìm các đối tượng có thuộc tính **"age"** lớn hơn hoặc bằng giá trị đầu vào trong phương thức.
+
+4. Tìm kiếm theo một thuộc tính, với giá trị được so sánh nhỏ hơn hoặc bằng: **`findBy{PropertyName}LessThanEqual`**, ví dụ: **`findByAgeLessThanEqual(int age)`**. Tương tự như trường hợp #3, tuy nhiên lọc các đối tượng có giá trị thuộc tính **"age"** thỏa mãn điều kiện giá trị truyền vào phương thức nhỏ hơn hoặc bằng giá trị này.
+
+5. Tìm kiếm theo một thuộc tính, với giá trị được so sánh giữa hai giá trị: **`findBy{PropertyName}Between`**, ví dụ: **`findByAgeBetween(int start, int end)`**. Lấy các đối tượng có giá trị thuộc tính **"age"** nằm giữa hai giá trị được truyền vào trong phương thức.
+
+6. Tìm kiếm theo một thuộc tính, với giá trị bắt đầu bằng một chuỗi: **`findBy{PropertyName}StartingWith`**, ví dụ: **`findByFirstNameStartingWith(String prefix)`**. Lấy các đối tượng có thuộc tính **"firstName"** bắt đầu bằng chuỗi được truyền vào trong phương thức.
+
+7. Tìm kiếm theo một thuộc tính, với giá trị có chứa một chuỗi: **`findBy{PropertyName}Containing`**, ví dụ: **`findByFirstNameContaining(String infix)`**. Lấy các đối tượng có thuộc tính **"firstName"** chứa chuỗi được truyền vào trong phương thức.
+
+## @Query (Native Query và JPQL Query)
+
+Trong **Spring Data JPA**, chúng ta có thể sử dụng annotation `@Query` để chỉ định câu truy vấn một cách rõ ràng cho phương thức trong `Repository` của chúng ta. Câu truy vấn có thể là **Native Query** (truy vấn SQL thuần) hoặc **JPQL Query** (truy vấn được định nghĩa bằng ngôn ngữ JPQL).
+
+1. Về **Native Query**, chúng ta có thể sử dụng annotation `@Query` với thuộc tính value để định nghĩa câu truy vấn. Ví dụ:
+
+```
+@Repository
+public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+    @Query(value = "SELECT * FROM employee e WHERE e.department_id = ?1", nativeQuery = true)
+    List<Employee> findByDepartment(Long departmentId);   
+}
+```
+
+Ở ví dụ trên, chúng ta đã định nghĩa một câu truy vấn SQL thuần `(SELECT * FROM employee e WHERE e.department_id = ?1)` để tìm kiếm danh sách các bản ghi nhân viên theo id của phòng ban. Lưu ý rằng chúng ta phải sử dụng thuộc tính **Native Query** và gán giá trị true để chỉ định rằng câu truy vấn được đưa ra là **Native Query**.
+
+2. Về **JPQL Query**, chúng ta có thể sử dụng annotation `@Query` với thuộc tính value để định nghĩa câu truy vấn. Ví dụ:
+
+```
+@Repository
+public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+    @Query("SELECT e FROM Employee e WHERE e.department.id = ?1")
+    List<Employee> findByDepartment(Long departmentId);
+}
+```
+
+Ở ví dụ trên, chúng ta đã định nghĩa một câu truy vấn JPQL `(SELECT e FROM Employee e WHERE e.department.id = ?1)` để tìm kiếm danh sách các bản ghi nhân viên theo id của phòng ban. Khác với **Native Query**, chúng ta không cần thiết lập thuộc tính **Native Query** và giá trị tương ứng của nó.
+
+**Khi sử dụng `@Query`, chúng ta có thể tận dụng được giảm thiểu số lượng bytecode và tăng hiệu suất của ứng dụng. Tuy nhiên, việc sử dụng `@Query` cũng có thể làm cho mã nguồn của chúng ta trở nên khó đọc và hardcode hơn.**
