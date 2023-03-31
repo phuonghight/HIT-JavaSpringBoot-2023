@@ -1,4 +1,4 @@
-package com.example.exercise04;
+package com.example.week04;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -7,7 +7,7 @@ public class ServletInitializer extends SpringBootServletInitializer {
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(Exercise04Application.class);
+        return application.sources(Week04Application.class);
     }
 
 }
