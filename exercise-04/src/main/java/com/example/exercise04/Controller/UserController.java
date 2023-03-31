@@ -9,7 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 @RestController
 public class UserController {
-    @RequestMapping(value = "/login")
+    @RequestMapping(value = {"/login", "/"})
     public ModelAndView loginView() {
         ModelAndView view = new ModelAndView("login");
         return  view;
