@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" class="h-full bg-gray-50">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="h-full">
+<div class="flex min-h-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="w-full max-w-md space-y-8">
+        <div>
+            <h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
+                Do yout want delete this user ? <span th:text="${id}"></span>
+            </h2>
+        </div>
+        <form class="mt-8 space-y-6" th:action="@{'/user/delete/' + ${id}}" method="POST">
+            <div>
+<!--                th:attr="onclick=|deleteById('${id}')|"-->
+                <button type="submit" id="deleteSubmit"
+                        class="group relative flex w-full justify-center rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                    CONFIRM
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const deleteById = async (id) => {
+        try {
+            const res = await fetch(`https://localhost:8081/user/delete/${id}`, {
+                method: "DELETE"
+            })
+            const result = await res.json();
+            console.log(result);
+        } catch (err) {
+            console.error(err)
+        }
+    }
+</script>
+</body>
+
+</html>
