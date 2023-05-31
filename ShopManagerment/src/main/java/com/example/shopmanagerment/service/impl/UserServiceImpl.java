@@ -2,12 +2,14 @@ package com.example.shopmanagerment.service.impl;
 
 import com.example.shopmanagerment.dto.UserDTO;
 import com.example.shopmanagerment.enums.EnumRole;
+import com.example.shopmanagerment.exception.InternalServerException;
 import com.example.shopmanagerment.model.User;
 import com.example.shopmanagerment.repository.RoleRepository;
 import com.example.shopmanagerment.repository.UserRepository;
 import com.example.shopmanagerment.service.UserService;
 import com.example.shopmanagerment.utils.Formatter;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,18 +37,29 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createNewUser(UserDTO userDTO) {
-        List<User> list = getAllUser();
-        for(User u : list) {
-            if(userDTO.getUsername().equals(u.getUsername())) {
-                throw new Error("Username is exist");
+        try {
+            List<User> list = getAllUser();
+            for(User u : list) {
+                if(userDTO.getUsername().equals(u.getUsername())) {
+                    throw new Error("Username is exist");
+                }
             }
+
+            modelMapper.typeMap(UserDTO.class, User.class).addMappings(new PropertyMap<UserDTO, User>() {
+                @Override
+                protected void configure() {
+                    skip(destination.getBirthday());
+                }
+            });
+
+            User user = modelMapper.map(userDTO, User.class);
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            user.setRole(roleRepository.findRoleByRoleName(EnumRole.ROLE_USER));
+            user.setBirthday(Formatter.convertStringToDate(userDTO.getBirthday()));
+
+            return userRepository.save(user);
+        } catch (Exception e) {
+            throw new InternalServerException("Data error creating user");
         }
-
-        User user = modelMapper.map(userDTO, User.class);
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        user.setRole(roleRepository.findRoleByRoleName(EnumRole.ROLE_USER));
-        user.setBirthday(Formatter.convertStringToDate(userDTO.getBirthday()));
-
-        return userRepository.save(user);
     }
 }

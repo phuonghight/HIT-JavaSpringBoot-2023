@@ -21,7 +21,7 @@ public class JwtUtils {
     @Value("${jwt.due_refreshToken}")
     private long dueRefreshToken;
 
-    public String generateTokenByUserName(String username) {
+    public String generateTokenByUsername(String username) {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
@@ -30,7 +30,7 @@ public class JwtUtils {
                 .compact();
     }
 
-    public String generateRefreshTokenByUserName(String username) {
+    public String generateRefreshTokenByUsername(String username) {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
