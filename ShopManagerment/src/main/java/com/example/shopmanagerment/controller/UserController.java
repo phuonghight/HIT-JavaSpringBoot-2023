@@ -1,6 +1,7 @@
 package com.example.shopmanagerment.controller;
 
 import com.example.shopmanagerment.dto.UserDTO;
+import com.example.shopmanagerment.service.UserService;
 import com.example.shopmanagerment.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,11 @@ import java.util.Map;
 @RequestMapping(value = "/api")
 public class UserController {
     @Autowired
-    private UserServiceImpl userServiceImpl;
+    private UserService userService;
 
-    @PostMapping(value = "/user")
+
+
+    @PostMapping(value = "/user/create")
     public ResponseEntity<?> createNewUser(@RequestBody @Valid UserDTO userDTO, BindingResult bindingResult) {
         if(bindingResult.hasErrors()){
             Map<String, String> errors= new HashMap<>();
@@ -36,6 +39,6 @@ public class UserController {
             }
             return ResponseEntity.ok(errorMsg);
         }
-        return ResponseEntity.ok(userServiceImpl.createNewUser(userDTO));
+        return ResponseEntity.ok(userService.createNewUser(userDTO));
     }
 }
