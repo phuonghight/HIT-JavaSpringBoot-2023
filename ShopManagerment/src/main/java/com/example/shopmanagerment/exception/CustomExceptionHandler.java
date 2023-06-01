@@ -18,4 +18,10 @@ public class CustomExceptionHandler {
     public ErrorResponse handleInternalServerException(InternalServerException e) {
         return new ErrorResponse(e.getMessage(), e.getStatus());
     }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleAlreadyExistsException(AlreadyExistsException e) {
+        return new ErrorResponse(e.getMessage(), e.getStatus());
+    }
 }

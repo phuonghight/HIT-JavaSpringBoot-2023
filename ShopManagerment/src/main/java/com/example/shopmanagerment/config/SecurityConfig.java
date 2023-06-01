@@ -35,10 +35,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and().
+        http.
+                exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and().
                 authorizeHttpRequests()
                 .antMatchers("/api/user/create").permitAll()
-                .antMatchers("/api/user/**").hasAnyAuthority("ROLE_USER")
+                .antMatchers("/api/user/edit/**").hasAnyAuthority("ROLE_USER")
                 .antMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
                 .anyRequest().permitAll()
                 .and()

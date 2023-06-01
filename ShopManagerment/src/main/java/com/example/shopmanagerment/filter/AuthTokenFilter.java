@@ -22,7 +22,7 @@ import java.io.IOException;
 
 @Service
 public class AuthTokenFilter extends OncePerRequestFilter {
-    private final static Logger log = LoggerFactory.getLogger(Jwts.class);
+    private final static Logger log = LoggerFactory.getLogger(AuthTokenFilter.class);
 
     @Autowired
     private JwtUtils jwtUtils;
@@ -34,28 +34,28 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             String token = extractToken(request);
-            if(StringUtils.hasText(token) && jwtUtils.validation(token)) {
+            if (StringUtils.hasText(token) && jwtUtils.validation(token)) {
                 String username = jwtUtils.getUsernameByToken(token);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
                 UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword());
+                        new UsernamePasswordAuthenticationToken(userDetails.getUsername(), null  ,userDetails.getAuthorities());
 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
                 SecurityContextHolder.clearContext();
-                log.error("Authentication failed");
             }
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("Authentication failed : " + e.getMessage());
         }
+        filterChain.doFilter(request, response);
     }
 
     public String extractToken(HttpServletRequest request) {
         String headerToken = request.getHeader("Authorization");
-        if(headerToken != null && headerToken.startsWith("Bearer ")) {
+        if (headerToken != null && headerToken.startsWith("Bearer ")) {
             return headerToken.substring(7);
         }
         return null;

@@ -2,7 +2,9 @@ package com.example.shopmanagerment.service.impl;
 
 import com.example.shopmanagerment.dto.UserDTO;
 import com.example.shopmanagerment.enums.EnumRole;
+import com.example.shopmanagerment.exception.AlreadyExistsException;
 import com.example.shopmanagerment.exception.InternalServerException;
+import com.example.shopmanagerment.exception.NotFoundException;
 import com.example.shopmanagerment.model.User;
 import com.example.shopmanagerment.repository.RoleRepository;
 import com.example.shopmanagerment.repository.UserRepository;
@@ -15,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -37,14 +40,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createNewUser(UserDTO userDTO) {
+        checkUserDto(userDTO);
         try {
-            List<User> list = getAllUser();
-            for(User u : list) {
-                if(userDTO.getUsername().equals(u.getUsername())) {
-                    throw new Error("Username is exist");
-                }
-            }
-
             modelMapper.typeMap(UserDTO.class, User.class).addMappings(new PropertyMap<UserDTO, User>() {
                 @Override
                 protected void configure() {
@@ -60,6 +57,41 @@ public class UserServiceImpl implements UserService {
             return userRepository.save(user);
         } catch (Exception e) {
             throw new InternalServerException("Data error creating user");
+        }
+    }
+
+
+    public User updateById(int id, UserDTO userDTO) {
+        Optional<User> user = userRepository.findById(id);
+        if(user.isEmpty()) {
+            throw new NotFoundException("Not found user with id: " + id);
+        }
+
+        checkUserDto(userDTO);
+
+        user.get().setFullName(userDTO.getFullName());
+        user.get().setAddress(userDTO.getAddress());
+        user.get().setEmail(userDTO.getEmail());
+        user.get().setBirthday(Formatter.convertStringToDate(userDTO.getBirthday()));
+        user.get().setUsername(userDTO.getUsername());
+        user.get().setPassword(userDTO.getPassword());
+
+        try {
+            return userRepository.save(user.get());
+        } catch (Exception e) {
+            throw new InternalServerException("Data error updating user");
+        }
+
+    }
+
+    private void checkUserDto(UserDTO userDTO) {
+        List<User> list = getAllUser();
+        for(User u : list) {
+            if(userDTO.getUsername().equals(u.getUsername())) {
+                throw new AlreadyExistsException("Username is already exist! Please use another username!");
+            } else if (u.getEmail().equals(userDTO.getEmail())) {
+                throw new AlreadyExistsException("Email is already exist! Please use another email!");
+            }
         }
     }
 }

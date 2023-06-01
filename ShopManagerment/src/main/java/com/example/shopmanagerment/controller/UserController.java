@@ -14,10 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -26,6 +23,7 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/api")
 public class UserController {
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -46,7 +44,9 @@ public class UserController {
         try {
             String accessToken = jwtUtils.generateTokenByUsername(userDetails.getUsername());
             String refreshToken = jwtUtils.generateRefreshTokenByUsername(userDetails.getUsername());
-            return ResponseEntity.ok(new UserResponse(userDetails.getId(), userDetails.getFullName(), accessToken, refreshToken, userDetails.getAuthorities()));
+            return ResponseEntity.ok(
+                    new UserResponse(userDetails.getId(), userDetails.getFullName(),
+                            accessToken, refreshToken, userDetails.getAuthorities()));
         } catch (Exception e) {
             return ResponseEntity.ok("Login failed: " + e.getMessage());
         }
@@ -69,5 +69,10 @@ public class UserController {
             return ResponseEntity.ok(errorMsg);
         }
         return ResponseEntity.ok(userService.createNewUser(userDTO));
+    }
+
+    @PutMapping(value = "/user/{id}")
+    public ResponseEntity<?> updateUserById(@PathVariable int id, @RequestBody UserDTO userDTO) {
+        return ResponseEntity.ok(userService.updateById(id, userDTO));
     }
 }
