@@ -13,6 +13,8 @@ import com.example.shopmanagerment.utils.Formatter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +42,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createNewUser(UserDTO userDTO) {
-        checkUserDto(userDTO);
+        List<User> list = getAllUser();
+        for(User u : list) {
+            if(userDTO.getUsername().equals(u.getUsername())) {
+                throw new AlreadyExistsException("Username is already exist! Please use another username!");
+            } else if (u.getEmail().equals(userDTO.getEmail())) {
+                throw new AlreadyExistsException("Email is already exist! Please use another email!");
+            }
+        }
+
         try {
             modelMapper.typeMap(UserDTO.class, User.class).addMappings(new PropertyMap<UserDTO, User>() {
                 @Override
@@ -62,36 +72,56 @@ public class UserServiceImpl implements UserService {
 
 
     public User updateById(int id, UserDTO userDTO) {
-        Optional<User> user = userRepository.findById(id);
-        if(user.isEmpty()) {
-            throw new NotFoundException("Not found user with id: " + id);
+        User user = getUserById(id);
+
+        List<User> list = getAllUser();
+        for(User u : list) {
+            if(!user.getEmail().equals(userDTO.getEmail()) && userDTO.getUsername().equals(u.getUsername())) {
+                throw new AlreadyExistsException("Username is already exist! Please use another username!");
+            } else if (!user.getEmail().equals(userDTO.getEmail()) && u.getEmail().equals(userDTO.getEmail())) {
+                throw new AlreadyExistsException("Email is already exist! Please use another email!");
+            }
         }
 
-        checkUserDto(userDTO);
-
-        user.get().setFullName(userDTO.getFullName());
-        user.get().setAddress(userDTO.getAddress());
-        user.get().setEmail(userDTO.getEmail());
-        user.get().setBirthday(Formatter.convertStringToDate(userDTO.getBirthday()));
-        user.get().setUsername(userDTO.getUsername());
-        user.get().setPassword(userDTO.getPassword());
+        user.setFullName(userDTO.getFullName());
+        user.setAddress(userDTO.getAddress());
+        user.setEmail(userDTO.getEmail());
+        user.setBirthday(Formatter.convertStringToDate(userDTO.getBirthday()));
+        user.setUsername(userDTO.getUsername());
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
         try {
-            return userRepository.save(user.get());
+            return userRepository.save(user);
         } catch (Exception e) {
             throw new InternalServerException("Data error updating user");
         }
 
     }
 
-    private void checkUserDto(UserDTO userDTO) {
-        List<User> list = getAllUser();
-        for(User u : list) {
-            if(userDTO.getUsername().equals(u.getUsername())) {
-                throw new AlreadyExistsException("Username is already exist! Please use another username!");
-            } else if (u.getEmail().equals(userDTO.getEmail())) {
-                throw new AlreadyExistsException("Email is already exist! Please use another email!");
-            }
+    @Override
+    public void deleteById(int id) {
+        userRepository.deleteById(id);
+    }
+
+    public User getUserById(int id) {
+        Optional<User> user = userRepository.findById(id);
+        if(user.isEmpty()) {
+            throw new NotFoundException("Not found user with id: " + id);
         }
+        return user.get();
+    }
+
+    @Override
+    public List<User> getAllUser(int page, int limit) {
+        if(page >= 0) {
+            Page<User> users = userRepository.findAll(PageRequest.of(page, limit));
+            return users.getContent();
+        }
+        return userRepository.findAll();
+    }
+
+    @Override
+    public List<User> searchByName(String name) {
+        return userRepository.findUsersByFullNameContaining(name);
     }
 }

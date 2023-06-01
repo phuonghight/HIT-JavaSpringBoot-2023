@@ -24,4 +24,10 @@ public class CustomExceptionHandler {
     public ErrorResponse handleAlreadyExistsException(AlreadyExistsException e) {
         return new ErrorResponse(e.getMessage(), e.getStatus());
     }
+
+    @ExceptionHandler(InvalidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleInvalidException(InvalidException e) {
+        return new ErrorResponse(e.getMessage(), e.getStatus());
+    }
 }

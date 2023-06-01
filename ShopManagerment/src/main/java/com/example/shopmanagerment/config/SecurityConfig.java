@@ -38,9 +38,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.
                 exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and().
                 authorizeHttpRequests()
-                .antMatchers("/api/user/create").permitAll()
-                .antMatchers("/api/user/edit/**").hasAnyAuthority("ROLE_USER")
+                .antMatchers("/api/user/**").hasAnyAuthority("ROLE_USER")
                 .antMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
+                .antMatchers("/api/public/**").permitAll()
                 .anyRequest().permitAll()
                 .and()
                 .addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class)
