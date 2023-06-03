@@ -1,6 +1,7 @@
 package com.example.shopmanagerment.controller;
 
 import com.example.shopmanagerment.dto.UserDTO;
+import com.example.shopmanagerment.email.EmailService;
 import com.example.shopmanagerment.exception.InvalidException;
 import com.example.shopmanagerment.request.LoginRequest;
 import com.example.shopmanagerment.respone.UserResponse;
@@ -37,9 +38,12 @@ public class UserController {
     private UserService userService;
 
     @Autowired
+    private EmailService emailService;
+
+    @Autowired
     private JwtUtils jwtUtils;
 
-    @PostMapping("/login")
+    @PostMapping("/public/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         Authentication authentication = null;
 
@@ -49,35 +53,37 @@ public class UserController {
         } catch (BadCredentialsException e) {
             log.error(e.getMessage());
         }
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
         assert authentication != null;
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        UserDetailsImpl userDetailsImpl = (UserDetailsImpl) auth.getPrincipal();
+        System.out.println(userService.getUserById(userDetailsImpl.getId()));
 
         try {
-            String accessToken = jwtUtils.generateTokenByUsername(userDetails.getUsername());
-            String refreshToken = jwtUtils.generateRefreshTokenByUsername(userDetails.getUsername());
+            String accessToken = jwtUtils.generateTokenByUsername(userDetailsImpl.getUsername());
+            String refreshToken = jwtUtils.generateRefreshTokenByUsername(userDetailsImpl.getUsername());
             return ResponseEntity.ok(
-                    new UserResponse(userDetails.getId(), userDetails.getFullName(),
-                            accessToken, refreshToken, userDetails.getAuthorities()));
+                    new UserResponse(userDetailsImpl.getId(), userDetailsImpl.getFullName(),
+                            accessToken, refreshToken, userDetailsImpl.getAuthorities()));
         } catch (Exception e) {
             return ResponseEntity.ok("Login failed: " + e.getMessage());
         }
     }
 
-    @PostMapping(value = "/register")
+    @PostMapping("/public/register")
     public ResponseEntity<?> createNewUser(@RequestBody @Valid UserDTO userDTO, BindingResult bindingResult) {
         propValidator(bindingResult);
         return ResponseEntity.ok(userService.createNewUser(userDTO));
     }
 
-    @PutMapping(value = "/user/{id}")
+    @PutMapping("/user/{id}")
     public ResponseEntity<?> updateUserById(@PathVariable int id, @RequestBody @Valid UserDTO userDTO, BindingResult bindingResult) {
         propValidator(bindingResult);
         return ResponseEntity.ok(userService.updateById(id, userDTO));
     }
 
-    @GetMapping("/public/user/{id}")
+    @GetMapping("/user/{id}")
     public ResponseEntity<?> getUserById(@PathVariable int id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
