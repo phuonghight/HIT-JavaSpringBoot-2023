@@ -39,7 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and().
                 authorizeHttpRequests()
                 .antMatchers("/api/public/**").permitAll()
-                .antMatchers("/api/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                .antMatchers("/api/auth/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 .antMatchers("/api/**").hasAnyAuthority("ROLE_ADMIN")
                 .anyRequest().permitAll()
                 .and()

@@ -11,7 +11,6 @@ import com.example.shopmanagerment.repository.UserRepository;
 import com.example.shopmanagerment.service.UserService;
 import com.example.shopmanagerment.utils.Formatter;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

@@ -2,13 +2,12 @@ package com.example.shopmanagerment.controller;
 
 import com.example.shopmanagerment.dto.UserDTO;
 import com.example.shopmanagerment.email.EmailService;
-import com.example.shopmanagerment.exception.InvalidException;
 import com.example.shopmanagerment.request.LoginRequest;
 import com.example.shopmanagerment.respone.UserResponse;
 import com.example.shopmanagerment.service.UserService;
 import com.example.shopmanagerment.service.impl.UserDetailsImpl;
 import com.example.shopmanagerment.utils.JwtUtils;
-import lombok.Getter;
+import com.example.shopmanagerment.utils.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +22,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api")
@@ -73,53 +70,35 @@ public class UserController {
 
     @PostMapping("/public/register")
     public ResponseEntity<?> createNewUser(@RequestBody @Valid UserDTO userDTO, BindingResult bindingResult) {
-        propValidator(bindingResult);
+        Validator.propValidator(bindingResult);
         return ResponseEntity.ok(userService.createNewUser(userDTO));
     }
 
-    @PutMapping("/user/{id}")
+    @PutMapping("/auth/user/{id}")
     public ResponseEntity<?> updateUserById(@PathVariable int id, @RequestBody @Valid UserDTO userDTO, BindingResult bindingResult) {
-        propValidator(bindingResult);
+        Validator.propValidator(bindingResult);
         return ResponseEntity.ok(userService.updateById(id, userDTO));
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/auth/user/{id}")
     public ResponseEntity<?> getUserById(@PathVariable int id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
-    @GetMapping("/admin/search")
+    @GetMapping("/user/search")
     public ResponseEntity<?> searchByUsername(@RequestParam String name) {
         return ResponseEntity.ok(userService.searchByName(name));
     }
 
-    @GetMapping("/admin/filter")
+    @GetMapping("/user/filter")
     public ResponseEntity<?> getAll(@RequestParam(name = "page", required = false) int page,
                                     @RequestParam(name = "limit", required = false) int limit) {
         return ResponseEntity.ok(userService.getAllUser(page, limit));
     }
 
-    @DeleteMapping("/admin/{id}")
+    @DeleteMapping("/user/{id}")
     public ResponseEntity<?> deleteById(@PathVariable int id) {
         userService.deleteById(id);
         return ResponseEntity.ok(HttpStatus.OK);
-    }
-
-    private void propValidator(BindingResult bindingResult) {
-        if(bindingResult.hasErrors()){
-            Map<String, String> errors= new HashMap<>();
-
-            bindingResult.getFieldErrors().forEach(
-                    error -> errors.put(error.getField(), error.getDefaultMessage())
-            );
-
-            String errorMsg= "";
-
-            for(String key: errors.keySet()){
-                errorMsg += "Error in: " + key + ", Reason: " + errors.get(key) + "\n";
-            }
-
-            throw new InvalidException(errorMsg);
-        }
     }
 }
