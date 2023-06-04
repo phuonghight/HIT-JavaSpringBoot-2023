@@ -52,13 +52,6 @@ public class UserServiceImpl implements UserService {
         }
 
         try {
-            modelMapper.typeMap(UserDTO.class, User.class).addMappings(new PropertyMap<UserDTO, User>() {
-                @Override
-                protected void configure() {
-                    skip(destination.getBirthday());
-                }
-            });
-
             User user = modelMapper.map(userDTO, User.class);
             user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             user.setRole(roleRepository.findRoleByRoleName(EnumRole.ROLE_USER));
