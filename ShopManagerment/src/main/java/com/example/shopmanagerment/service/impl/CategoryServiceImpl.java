@@ -54,11 +54,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category updateCategoryById(int id, CategoryDTO categoryDTO) {
+        Category category = this.getCategoryById(id); // nếu id không đúng thì throw lỗi
+        category.setName(categoryDTO.getName());
+        category.setDescription(categoryDTO.getDescription());
         try {
-            Category category = modelMapper.map(categoryDTO, Category.class);
-            this.getCategoryById(id);
-            categoryRepository.updateById(id, category);
-            return categoryRepository.findById(id).get();
+            return categoryRepository.save(category);
         } catch (InternalServerException exception) {
             throw new InternalServerException("Date error updating category");
         }
