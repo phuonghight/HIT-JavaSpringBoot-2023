@@ -3,6 +3,7 @@ package com.example.shopmanagerment.service.impl;
 import com.example.shopmanagerment.dto.UserDTO;
 import com.example.shopmanagerment.enums.EnumRole;
 import com.example.shopmanagerment.exception.AlreadyExistsException;
+import com.example.shopmanagerment.exception.ForbiddenException;
 import com.example.shopmanagerment.exception.InternalServerException;
 import com.example.shopmanagerment.exception.NotFoundException;
 import com.example.shopmanagerment.model.User;
@@ -14,8 +15,13 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 import java.util.Optional;
@@ -100,7 +106,19 @@ public class UserServiceImpl implements UserService {
         if(user.isEmpty()) {
             throw new NotFoundException("Not found user with id: " + id);
         }
-        return user.get();
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        UserDetailsImpl curUser = (UserDetailsImpl) auth.getPrincipal();
+
+        String role = curUser.getAuthorities().stream().findFirst().get().getAuthority();
+
+        if(role.equals(EnumRole.ROLE_ADMIN.name())) {
+            return user.get();
+        } else {
+            if(curUser.getId() == id) return user.get();
+            else throw new ForbiddenException("You don't have access");
+        }
     }
 
     @Override

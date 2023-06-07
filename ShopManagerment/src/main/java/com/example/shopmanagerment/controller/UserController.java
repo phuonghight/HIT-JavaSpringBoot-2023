@@ -53,9 +53,7 @@ public class UserController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        assert authentication != null;
         UserDetailsImpl userDetailsImpl = (UserDetailsImpl) auth.getPrincipal();
-        System.out.println(userService.getUserById(userDetailsImpl.getId()));
 
         try {
             String accessToken = jwtUtils.generateTokenByUsername(userDetailsImpl.getUsername());

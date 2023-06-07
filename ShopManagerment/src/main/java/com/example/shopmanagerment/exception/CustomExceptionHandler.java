@@ -32,9 +32,9 @@ public class CustomExceptionHandler {
         return new ErrorResponse(e.getMessage(), e.getStatus());
     }
 
-    @ExceptionHandler(HttpClientErrorException.Forbidden.class)
+    @ExceptionHandler(ForbiddenException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ErrorResponse handleForbiddenException(HttpClientErrorException.Forbidden e) {
-        return new ErrorResponse(e.getMessage(), e.getStatusCode());
+    public ErrorResponse handleForbiddenException(ForbiddenException e) {
+        return new ErrorResponse(e.getMessage(), e.getStatus());
     }
 }
