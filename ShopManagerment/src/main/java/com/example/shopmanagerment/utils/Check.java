@@ -2,6 +2,9 @@ package com.example.shopmanagerment.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,5 +22,17 @@ public class Check {
         } catch (ParseException e) {
             return false;
         }
+    }
+
+    public static boolean isBornToday(Date target) {
+        // Lấy ngày hôm nay
+        LocalDate today = LocalDate.now();
+
+        // Chuyển đổi Date thành LocalDate
+        LocalDate localDate = target.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        // Kiểm tra nếu localDate là ngày hôm nay
+        return localDate.getDayOfMonth() == today.getDayOfMonth() &&
+                localDate.getMonth() == today.getMonth();
     }
 }

@@ -13,11 +13,10 @@ import java.nio.charset.StandardCharsets;
 
 @Service
 public class EmailService implements EmailSender {
-    @Autowired
-    private JavaMailSender javaMailSender;
-
     private final static Logger log = LoggerFactory.getLogger(EmailService.class);
 
+    @Autowired
+    private JavaMailSender javaMailSender;
 
     @Override
     public String sendMail(String to, String subject, String content) throws MessagingException {
