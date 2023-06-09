@@ -3,6 +3,7 @@ package com.example.shopmanagerment.service;
 import com.example.shopmanagerment.dto.UserDTO;
 import com.example.shopmanagerment.model.User;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 public interface UserService {
@@ -13,4 +14,7 @@ public interface UserService {
     public User getUserById(int id);
     public List<User> getAllUser(int page, int limit);
     public List<User> searchByName(String name);
+
+    public String forgotPassword(String email) throws MessagingException;
+    public String resetPassword(String email, String otp);
 }

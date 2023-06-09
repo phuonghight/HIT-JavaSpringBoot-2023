@@ -21,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 @RestController
@@ -70,6 +71,16 @@ public class UserController {
     public ResponseEntity<?> createNewUser(@RequestBody @Valid UserDTO userDTO, BindingResult bindingResult) {
         Validator.propValidator(bindingResult);
         return ResponseEntity.ok(userService.createNewUser(userDTO));
+    }
+
+    @PostMapping("/public/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestParam String email) throws MessagingException {
+        return ResponseEntity.ok(userService.forgotPassword(email));
+    }
+
+    @GetMapping("/public/forgot-password")
+    public String newPassword(@RequestParam String email, @RequestParam String otp) {
+        return userService.resetPassword(email, otp);
     }
 
     @PutMapping("/auth/user/{id}")
