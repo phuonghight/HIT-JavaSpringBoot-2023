@@ -176,7 +176,7 @@ public class UserServiceImpl implements UserService {
                 "</tr></table></div></body></html>";
         emailSender.sendMail(user.getEmail(), subject, content);
 
-        return null;
+        return "Please check you email to get new password";
     }
 
     @Override
